@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 
 # rest_framework
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status, generics, mixins, viewsets
@@ -15,11 +16,20 @@ from .serializers import ReviewSerializer, WatchListSerializer, StreamPlatformSe
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     
+    def get_queryset(self):
+        return Review.objects.all()
+    
     def perform_create(self, serializer):        
         pk = self.kwargs.get('pk')
         watchlist = WatchList.objects.get(id=pk)
         
-        serializer.save(watchlist=watchlist)
+        review_user = self.request.user
+        review_quertset = Review.objects.filter(watchlist=watchlist, review_user=review_user)
+        
+        if review_quertset.exists():
+            raise ValidationError("You have already reviewed this watch!")
+        
+        serializer.save(watchlist=watchlist, review_user=review_user)
 
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
@@ -51,7 +61,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 #     def post(self, request, *args, **kwargs):
 #         return self.create(request, *args, **kwargs)
 
-class StreamPlatformVS(viewsets.ReadOnlyModelViewSet):
+class StreamPlatformVS(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
 
