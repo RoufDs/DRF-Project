@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status, generics, mixins, viewsets
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 # file_directories
 from ..models import Review, WatchList, StreamPlatform
@@ -34,6 +35,7 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -43,6 +45,7 @@ class ReviewList(generics.ListAPIView):
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 # class ReviewDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
 #     queryset = Review.objects.all()
