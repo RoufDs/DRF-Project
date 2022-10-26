@@ -170,7 +170,7 @@ class StreamPlatformDetailAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     
-class WatchList(generics.ListAPIView):
+class WatchListGV(generics.ListAPIView):
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
     # permission_classes = [IsAuthenticated]

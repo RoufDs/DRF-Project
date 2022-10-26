@@ -11,7 +11,7 @@ from .views import (
                         StreamPlatformDetailAV,
                         StreamPlatformVS,
                         UserReview,
-                        WatchList
+                        WatchListGV
                     )
 
 router = DefaultRouter()
@@ -20,7 +20,7 @@ router.register('stream', StreamPlatformVS, basename='streamplatform')
 urlpatterns = [
     path('list/', WatchListAV.as_view(), name='movie-list'),
     path('<int:pk>/', WatchDetailAV.as_view(), name='movie-detail'), 
-    path('list2/', WatchList.as_view(), name='watch-list'), 
+    path('list2/', WatchListGV.as_view(), name='watch-list'), 
     
     path('', include(router.urls)),
     
