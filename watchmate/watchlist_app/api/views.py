@@ -10,6 +10,9 @@ from rest_framework.views import APIView
 from rest_framework import status, generics, mixins, viewsets
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from rest_framework import filters
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 # file_directories
 from ..models import Review, WatchList, StreamPlatform
@@ -65,6 +68,8 @@ class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
     
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -163,6 +168,15 @@ class StreamPlatformDetailAV(APIView):
         platform = StreamPlatform.objects.get(id=pk)
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+class WatchList(generics.ListAPIView):
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    # permission_classes = [IsAuthenticated]
+    # throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields  = ['avg_rating']
 
 
 class WatchListAV(APIView):
